@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const auth = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
 const User = require('../models/User');
@@ -10,8 +11,15 @@ const User = require('../models/User');
 // @route   GET api/auth
 // @desc    Devolver un usuario logueado
 // @access  Private
-router.get('/', (req, res) => {
-  res.send('Devuelve un usuario logueado');
+router.get('/', auth, async (req, res) => {
+  try {
+    // Devolver usuario desde la BD
+    const user = await await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error de servidor');
+  }
 });
 
 // @route   POST api/auth
@@ -47,6 +55,7 @@ router.post(
         return res.status(400).json({ msg: 'Credenciales inválidas' });
       }
 
+      // Conseguir el Token
       const payload = {
         user: {
           id: user.id,
