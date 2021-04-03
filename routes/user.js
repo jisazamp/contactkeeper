@@ -30,7 +30,7 @@ router.post(
 
     const { name, email, password } = req.body;
     try {
-      // Método de Moongose para hayar una coincidencia
+      // Método de Moongose para hallar una coincidencia
       let user = await User.findOne({ email });
 
       if (user) {
