@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
+// Este es el middleware que usamos para proteger rutas
+const auth = require('../middleware/auth');
+const { body, validationResult } = require('express-validator');
+
+const User = require('../models/User');
+const Contact = require('../models/Contact');
 
 // @route   GET api/contacts
 // @desc    Devuelve los contactos de un usuario
 // @access  Private
-router.get('/', (req, res) => {
-  res.send('Devuelve contactos de un usuario');
+router.get('/', auth, async (req, res) => {
+  try {
+    const contacts = await Contact.find({ user: req.user.id }).sort({
+      date: -1,
+    });
+    res.json(contacts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error de servidor');
+  }
 });
 
 // @route   POST api/contacts
