@@ -44,10 +44,15 @@ const ContactState = (props) => {
   // Añadir contacto
   const addContact = (contact) => {
     contact.id = uuidv4();
-    dispatch({ type: ADD_CONTACT, payload: contact });
+    if (contact.name && contact.email) {
+      dispatch({ type: ADD_CONTACT, payload: contact });
+    }
   };
 
   // Borrar contacto
+  const deleteContact = (id) => {
+    dispatch({ type: DELETE_CONTACT, payload: id });
+  };
 
   // Set del contacto actual
 
@@ -60,7 +65,9 @@ const ContactState = (props) => {
   // Limpiar filtro
 
   return (
-    <ContactContext.Provider value={{ contacts: state.contacts, addContact }}>
+    <ContactContext.Provider
+      value={{ contacts: state.contacts, addContact, deleteContact }}
+    >
       {props.children}
     </ContactContext.Provider>
   );
